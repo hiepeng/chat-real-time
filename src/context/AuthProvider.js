@@ -7,8 +7,7 @@ import { auth } from "../components/firebase/config";
 export const AuthContext = React.createContext();
 
 export default function AuthProvider({ children }) {
-  const [user, setUser] = useState("");
-
+  const [user, setUser] = useState({});
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -21,7 +20,7 @@ export default function AuthProvider({ children }) {
         navigate("/");
         return;
       }
-
+      setIsLoading(false);
       navigate("/login");
     });
     //clean function

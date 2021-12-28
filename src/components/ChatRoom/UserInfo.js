@@ -2,6 +2,7 @@ import { Avatar, Button, Typography } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
 import { auth } from '../firebase/config';
+import {AuthContext} from '../../Context/AuthProvider'
 
 const WrapperStyled = styled.div`
     display:flex;
@@ -15,11 +16,20 @@ const WrapperStyled = styled.div`
 `;
 
 export default function UserInfo() {
+
+  
+
+    const {user:
+    {
+        displayName,
+        photoURL
+    }} = React.useContext(AuthContext);
+
     return (
         <WrapperStyled>
             <div>
-            <Avatar>A</Avatar>
-            <Typography.Text>ABC</Typography.Text>
+            <Avatar src={photoURL}>{photoURL ? '' : displayName?.charAt(0)?.toUpperCase()}</Avatar>
+            <Typography.Text>{displayName}</Typography.Text>
             </div>
             <Button ghost onClick={() =>auth.signOut() }>
                 Logout
