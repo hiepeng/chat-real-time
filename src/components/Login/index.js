@@ -2,7 +2,7 @@ import React from 'react';
 import {Row, Col, Button, Typography } from 'antd';
 import firebase, { auth } from '../firebase/config';
 import { useNavigate } from 'react-router-dom';
-import { addDocument } from '../firebase/services';
+import { addDocument, generateKeywords } from '../firebase/services';
 
 const {Title} = Typography
 
@@ -21,6 +21,7 @@ export default function Login() {
                 photoURL: user.photoURL,
                 uid: user.uid,
                 providerId: additionalUserInfo.providerId,
+                keywords: generateKeywords(user.displayName)
              });
         }
 

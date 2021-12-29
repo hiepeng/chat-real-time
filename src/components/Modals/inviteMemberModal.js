@@ -1,8 +1,9 @@
 import React, { useContext, useState } from "react";
-import { Form, Modal, Select, spin, Avatar } from "antd";
+import { Form, Modal, Select, Spin, Avatar } from "antd";
 import { AppContext } from "../../Context/AppProvider";
 import { AuthContext } from "../../Context/AuthProvider";
 import { debounce } from "lodash";
+import { db } from "../../components/firebase/config";
 
 function DebounceSelect({ fetchOptions, debounceTimeout = 300, ...props }) {
   const [fetching, setFetching] = useState(false);
@@ -23,12 +24,13 @@ function DebounceSelect({ fetchOptions, debounceTimeout = 300, ...props }) {
   return (
     <Select
       labelInValue
+      filterOption={false}
       onSearch={debounceFetcher}
-      notFoundContent={fetching ? <spin size="small" /> : null}
+      notFoundContent={fetching ? <Spin size='small' /> : null}
       {...props}
     >
       {options.map((opt) => (
-        <Select.Option>
+        <Select.Option key={opt.value} value={opt.value} title={opt.label}>
           <Avatar size="small" src={opt.photoURL}>
             {opt.photoURL ? "" : opt.label?.charAt(0)?.toUpperCase()}
           </Avatar>
@@ -39,40 +41,63 @@ function DebounceSelect({ fetchOptions, debounceTimeout = 300, ...props }) {
   );
 }
 
-async function fetchUserList() {}
+async function fetchUserList(search) {
+  return db
+    .collection("users")
+    .where("keywords", "array-contains", search)
+    .orderBy("displayName")
+    .limit(20)
+    .get()
+    .then(snapshot => {
+      return snapshot.docs.map(doc => ({
+        label: doc.data().displayName,
+        value: doc.data().uid,
+        photoURL: doc.data().photoURL
 
-export default function inviteMemberModal() {
-  const { isInviteMemberVisible, setIsInviteMemberVisible } = useContext(AppContext);
+      }))
+    });
+}
 
-  const {
-    user: { uid },
-  } = useContext(AuthContext);
+export default function InviteMemberModal() {
+  const { isInviteMemberVisible, setIsInviteMemberVisible,selectedRoomId, selectedRoom } =
+    useContext(AppContext);
   const [value, setValue] = useState([]);
   const [form] = Form.useForm();
 
+  
   const handleOk = () => {
     
+    const roomRef = db.collection('rooms').doc(selectedRoomId);
+    roomRef.update({
+      members: [...selectedRoom.members, ...value.map((val) => val.value)]
+    })
+    setIsInviteMemberVisible(false);
+    form.resetFields();
     //
   };
 
   const handleCancel = () => {
+    
+    setIsInviteMemberVisible(false);
     form.resetFields();
-
-    setIsAddRoomVisible(false);
   };
+
+  console.log({value})
 
   return (
     <div>
       <Modal
         title="Mời thêm thành viên"
-        visible={isAddRoomVisible}
+        visible={isInviteMemberVisible}
         onOk={handleOk}
         onCancel={handleCancel}
+        destroyOnClose={true}
       >
         <Form form={form} layout="vertical">
           <DebounceSelect
             mode="multiple"
-            lable="Tên các thành viên"
+            name="search-user"
+            label="Tên các thành viên"
             value={value}
             placeholder="Nhập tên thành viên"
             fetchOptions={fetchUserList}

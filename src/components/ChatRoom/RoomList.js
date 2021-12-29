@@ -40,7 +40,7 @@ export default function RoomList() {
     <Collapse ghost defaultActiveKey={["1"]}>
       <PanelStyled header="List Room Chat">
         {rooms.map((room) => (
-          <LinkStyled key={room.id} onClick={() => setSelectedRoomId(room.id) }>{room.name}</LinkStyled>
+          <LinkStyled key={room.id} onClick={() => setSelectedRoomId }>{room.name}</LinkStyled>
         ))}
         <Button
           type="text"
