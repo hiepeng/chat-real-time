@@ -9,11 +9,12 @@ const WrapperStyled = styled.div`
     justify-content: space-between;
     padding: 12px 16px;
     border-bottom: 1px solid white;
-    .username{
-        color: white;
-        margin-left: 5px;
     }
+
+  
 `;
+
+
 
 export default function UserInfo() {
 
@@ -27,9 +28,9 @@ export default function UserInfo() {
 
     return (
         <WrapperStyled>
-            <div>
+            <div style={{display:"flex", gap:"10px", alignItems:"center"}}>
             <Avatar src={photoURL}>{photoURL ? '' : displayName?.charAt(0)?.toUpperCase()}</Avatar>
-            <Typography.Text>{displayName}</Typography.Text>
+            <Typography.Text style={{fontSize:"15px", fontWeight:'bold'}} >{displayName}</Typography.Text>
             </div>
             <Button ghost onClick={() =>auth.signOut() }>
                 Logout

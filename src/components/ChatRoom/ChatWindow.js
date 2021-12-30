@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { UserAddOutlined } from "@ant-design/icons/lib/icons";
 import { Button, Avatar, Tooltip, Input, Form, Alert } from "antd";
@@ -15,24 +15,23 @@ const HeaderStyled = styled.div`
   padding: 0 16px;
   align-items: center;
   border-bottom: 1px solid pink;
+  
 
-  .Header {
-    &__info {
+    .Header__info {
       display: flex;
       flex-direction: column;
       justify-content: center;
       color: black;
     }
 
-    &__title {
-      margin: 0;
+    .Header__title {
+      margin: 300;
       font-weight: bold;
     }
 
-    &__description {
+    .Header__description {
       font-size: 12px;
     }
-  }
 `;
 
 const ButtonGroupStyled = styled.div`
@@ -67,11 +66,37 @@ const FormStyled = styled(Form)`
   }
 `;
 
+const HeaderTitle = styled.p`
+      font-size:20px;
+      font-weight: bold;
+      margin-bottom: 0px;
+      
+`;
+
+const HeaderInfo = styled.div`
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      color: black;
+`;
+
+const HeaderDescription = styled.span`
+  font-size:12px;
+`;
+
 const WrapperStyled = styled.div`
   height: 100vh;
 `;
 
+
+
 export default function ChatWindow() {
+
+
+  const inputRef = useRef(null);
+
+  const messageListRef = useRef(null);
+  
   const { selectedRoom, members, setIsInviteMemberVisible } =
     useContext(AppContext);
 
@@ -85,7 +110,9 @@ export default function ChatWindow() {
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
+   
   };
+  
   const handleOnSubmit = () => {
     addDocument("messages", {
       text: inputValue,
@@ -94,7 +121,17 @@ export default function ChatWindow() {
       roomId: selectedRoom.id,
       displayName,
     });
-    form.resetFields(["message"]);
+
+   
+
+    form.resetFields('');
+
+    if (inputRef?.current) {
+      setTimeout(() => {
+        inputRef.current.focus();
+      });
+    }
+   
   };
 
   const condition = React.useMemo(
@@ -110,17 +147,26 @@ export default function ChatWindow() {
 
   console.log({ messages });
 
+
+  useEffect(() => {
+    // scroll to bottom after message changed
+    if (messageListRef?.current) {
+      messageListRef.current.scrollTop =
+        messageListRef.current.scrollHeight + 50;
+    }
+  }, [messages]);
+
   return (
     <WrapperStyled>
       {selectedRoom.id ? (
         <>
           <HeaderStyled>
-            <div className="Header__info">
-              <p className="header__title">{selectedRoom.name}</p>
-              <span className="header__description">
+            <HeaderInfo className="Header__info">
+              <HeaderTitle className="header__title">{selectedRoom.name}</HeaderTitle>
+              <HeaderDescription className="header__description">
                 {selectedRoom.description}
-              </span>
-            </div>
+              </HeaderDescription>
+            </HeaderInfo>
             <ButtonGroupStyled>
               <Button
                 icon={<UserAddOutlined />}
@@ -144,7 +190,7 @@ export default function ChatWindow() {
           </HeaderStyled>
 
           <ContentStyled>
-            <MessageListStyled>
+            <MessageListStyled ref={messageListRef}>
               {messages.map((mes) => (
                 <Message
                   key={mes.id}
@@ -158,6 +204,7 @@ export default function ChatWindow() {
             <FormStyled form={form}>
               <Form.Item name="messages">
                 <Input
+                  ref={inputRef}
                   onChange={handleInputChange}
                   onPressEnter={handleOnSubmit}
                   placeholder="Nhập tin nhắn..."

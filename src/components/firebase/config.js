@@ -26,10 +26,10 @@ firebase.analytics();
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// eslint-disable-next-line no-use-before-define
+
 auth.useEmulator('http://localhost:9099');
 if (window.location.hostname === 'localhost') {
-  // eslint-disable-next-line no-use-before-define
+
   db.useEmulator('localhost', '8081');
 }
 
