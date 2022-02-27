@@ -1,8 +1,8 @@
 // Import the functions you need from the SDKs you need
-import  firebase from 'firebase/compat/app';
-import 'firebase/compat/analytics';
-import 'firebase/compat/auth';
-import 'firebase/compat/firestore';
+import firebase from "firebase/compat/app";
+import "firebase/compat/analytics";
+import "firebase/compat/auth";
+import "firebase/compat/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -19,20 +19,16 @@ const firebaseConfig = {
   measurementId: "G-G0LBPBGZND",
 };
 
-
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// auth.useEmulator("http://localhost:9099");
+// if (window.location.hostname === "localhost") {
+//   db.useEmulator("localhost", "8081");
+// }
 
-auth.useEmulator('http://localhost:9099');
-if (window.location.hostname === 'localhost') {
-
-  db.useEmulator('localhost', '8081');
-}
-
-
-export {db, auth};
+export { db, auth };
 export default firebase;

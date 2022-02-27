@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { Spin } from "antd";
 import { auth } from "../components/firebase/config";
 
-
 export const AuthContext = React.createContext();
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState({});
+  console.log(user);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -21,6 +21,7 @@ export default function AuthProvider({ children }) {
         return;
       }
       setIsLoading(false);
+      
       navigate("/login");
     });
     //clean function
@@ -29,9 +30,10 @@ export default function AuthProvider({ children }) {
     };
   }, [navigate]);
 
+
   return (
     <AuthContext.Provider value={{ user }}>
-      {isLoading ? <Spin style={{ position: 'fixed', inset: 0 }} /> : children}
+      {isLoading ? <Spin style={{ position: "fixed", inset: 0 }} /> : children}
     </AuthContext.Provider>
   );
 }

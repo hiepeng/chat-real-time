@@ -26,7 +26,7 @@ function DebounceSelect({ fetchOptions, debounceTimeout = 300, ...props }) {
       labelInValue
       filterOption={false}
       onSearch={debounceFetcher}
-      notFoundContent={fetching ? <Spin size='small' /> : null}
+      notFoundContent={fetching ? <Spin size="small" /> : null}
       {...props}
     >
       {options.map((opt) => (
@@ -48,41 +48,41 @@ async function fetchUserList(search) {
     .orderBy("displayName")
     .limit(20)
     .get()
-    .then(snapshot => {
-      return snapshot.docs.map(doc => ({
+    .then((snapshot) => {
+      return snapshot.docs.map((doc) => ({
         label: doc.data().displayName,
         value: doc.data().uid,
-        photoURL: doc.data().photoURL
-
-      }))
+        photoURL: doc.data().photoURL,
+      }));
     });
 }
 
 export default function InviteMemberModal() {
-  const { isInviteMemberVisible, setIsInviteMemberVisible,selectedRoomId, selectedRoom } =
-    useContext(AppContext);
+  const {
+    isInviteMemberVisible,
+    setIsInviteMemberVisible,
+    selectedRoomId,
+    selectedRoom,
+  } = useContext(AppContext);
   const [value, setValue] = useState([]);
   const [form] = Form.useForm();
 
-  
   const handleOk = () => {
-    
-    const roomRef = db.collection('rooms').doc(selectedRoomId);
+    const roomRef = db.collection("rooms").doc(selectedRoomId);
     roomRef.update({
-      members: [...selectedRoom.members, ...value.map((val) => val.value)]
-    })
+      members: [...selectedRoom.members, ...value.map((val) => val.value)],
+    });
     setIsInviteMemberVisible(false);
     form.resetFields();
     //
   };
 
   const handleCancel = () => {
-    
     setIsInviteMemberVisible(false);
     form.resetFields();
   };
 
-  console.log({value})
+  console.log({ value });
 
   return (
     <div>

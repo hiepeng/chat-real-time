@@ -13,7 +13,7 @@ export default function AddRoomModal() {
 
   const handleOk = () => {
     addDocument("rooms", { ...form.getFieldsValue(), members: [uid] });
-
+    console.log(form.getFieldsValue())
     form.resetFields();
 
     setIsAddRoomVisible(false);
@@ -44,4 +44,4 @@ export default function AddRoomModal() {
       </Modal>
     </div>
   );
-};
+}

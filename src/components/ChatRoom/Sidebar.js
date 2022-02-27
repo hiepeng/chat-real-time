@@ -5,16 +5,16 @@ import UserInfo from "./UserInfo";
 import styled from "styled-components";
 
 const SidebarStyled = styled.div`
-  background: pink;
+  background: #eee;
   color: white;
   height: 100vh;
+  border-right: 3px solid #eee;
 `;
 
 export default function Sidebar() {
   return (
     <SidebarStyled>
       <Row>
-
         <Col span={24}>
           {" "}
           <UserInfo />{" "}
@@ -24,7 +24,6 @@ export default function Sidebar() {
           {" "}
           <RoomList />{" "}
         </Col>
-
       </Row>
     </SidebarStyled>
   );
