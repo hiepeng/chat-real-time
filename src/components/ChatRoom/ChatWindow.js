@@ -7,6 +7,8 @@ import { AppContext } from "../../Context/AppProvider";
 import { AuthContext } from "../../Context/AuthProvider";
 import { addDocument } from "../firebase/services";
 import useFirestore from "../../hooks/useFirestore";
+import { storage } from "../firebase/config";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const HeaderStyled = styled.div`
   display: flex;
@@ -15,23 +17,22 @@ const HeaderStyled = styled.div`
   padding: 0 16px;
   align-items: center;
   border-bottom: 1px solid pink;
-  
 
-    .Header__info {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      color: black;
-    }
+  .Header__info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: black;
+  }
 
-    .Header__title {
-      margin: 300;
-      font-weight: bold;
-    }
+  .Header__title {
+    margin: 300;
+    font-weight: bold;
+  }
 
-    .Header__description {
-      font-size: 12px;
-    }
+  .Header__description {
+    font-size: 12px;
+  }
 `;
 
 const ButtonGroupStyled = styled.div`
@@ -67,39 +68,34 @@ const FormStyled = styled(Form)`
 `;
 
 const HeaderTitle = styled.p`
-      font-size:20px;
-      font-weight: bold;
-      margin-bottom: 0px;
-      
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 0px;
 `;
 
 const HeaderInfo = styled.div`
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  color: black;
 `;
 
 const HeaderDescription = styled.span`
-  font-size:12px;
+  font-size: 12px;
 `;
 
 const WrapperStyled = styled.div`
   height: 100vh;
-@media only screen and (max-width: 600px) {
-  height: calc(100vh - 140px);
-}
+  @media only screen and (max-width: 600px) {
+    height: calc(100vh - 140px);
+  }
 `;
 
-
-
 export default function ChatWindow() {
-
-
   const inputRef = useRef(null);
 
   const messageListRef = useRef(null);
-  
+
   const { selectedRoom, members, setIsInviteMemberVisible } =
     useContext(AppContext);
 
@@ -113,9 +109,8 @@ export default function ChatWindow() {
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
-   
   };
-  
+
   const handleOnSubmit = () => {
     addDocument("messages", {
       text: inputValue,
@@ -125,16 +120,38 @@ export default function ChatWindow() {
       displayName,
     });
 
-   
-
-    form.resetFields('');
+    form.resetFields("");
 
     if (inputRef?.current) {
       setTimeout(() => {
         inputRef.current.focus();
       });
     }
-   
+
+    if (!file) {
+      alert("Please choose a file first!");
+    }
+    const storageRef = ref(storage, `/files/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const percent = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+
+        // update progress
+        setPercent(percent);
+      },
+      (err) => console.log(err),
+      () => {
+        // download url
+        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+          console.log(url);
+        });
+      }
+    );
+
   };
 
   const condition = React.useMemo(
@@ -150,7 +167,6 @@ export default function ChatWindow() {
 
   console.log({ messages });
 
-
   useEffect(() => {
     // scroll to bottom after message changed
     if (messageListRef?.current) {
@@ -159,13 +175,23 @@ export default function ChatWindow() {
     }
   }, [messages]);
 
+  const [file, setFile] = useState();
+  console.log(file);
+  const getFile = (event) => {
+    setFile(event.target.files[0]);
+  };
+
+  const [percent, setPercent] = useState(0);
+
   return (
     <WrapperStyled>
       {selectedRoom.id ? (
         <>
           <HeaderStyled>
             <HeaderInfo className="Header__info">
-              <HeaderTitle className="header__title">{selectedRoom.name}</HeaderTitle>
+              <HeaderTitle className="header__title">
+                {selectedRoom.name}
+              </HeaderTitle>
               <HeaderDescription className="header__description">
                 {selectedRoom.description}
               </HeaderDescription>
@@ -205,6 +231,8 @@ export default function ChatWindow() {
               ))}
             </MessageListStyled>
             <FormStyled form={form}>
+              <input type="file" onChange={getFile} accept="" />
+              <p>{percent} "% done"</p>
               <Form.Item name="messages">
                 <Input
                   ref={inputRef}

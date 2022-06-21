@@ -3,7 +3,8 @@ import firebase from "firebase/compat/app";
 import "firebase/compat/analytics";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
-
+import { initializeApp } from "firebase/app";
+import { getStorage } from "firebase/storage";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -29,6 +30,9 @@ const db = firebase.firestore();
 // if (window.location.hostname === "localhost") {
 //   db.useEmulator("localhost", "8081");
 // }
+
+export const app = initializeApp(firebaseConfig);
+export const storage = getStorage(app);
 
 export { db, auth };
 export default firebase;
