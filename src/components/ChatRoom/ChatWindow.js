@@ -86,6 +86,9 @@ const HeaderDescription = styled.span`
 
 const WrapperStyled = styled.div`
   height: 100vh;
+@media only screen and (max-width: 600px) {
+  height: calc(100vh - 140px);
+}
 `;
 
 

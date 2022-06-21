@@ -17,7 +17,7 @@ const WrapperStyled = styled.div`
   }
 
   .content {
-    margin-left: 30px;
+    margin-left: 37px;
   }
 `;
 

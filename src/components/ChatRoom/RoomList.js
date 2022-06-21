@@ -7,6 +7,8 @@ import { AppContext } from "../../Context/AppProvider";
 const { Panel } = Collapse;
 
 const PanelStyled = styled(Panel)`
+max-height: calc(100vh - 120px);
+overflow-y: auto;
   &&& {
     .ant-collapse-header,
     p {
@@ -20,12 +22,13 @@ const PanelStyled = styled(Panel)`
       padding: 0;
     }
   }
+
 `;
 
 const LinkStyled = styled(Typography.Link)`
   display: block;
   margin-bottom: 5px;
-  border-bottom: 1px solid white;;
+  border-bottom: 1px solid white;
   border-radius: 5%;
   font-weight: 600;
   font-size: 16px;
@@ -34,7 +37,7 @@ const LinkStyled = styled(Typography.Link)`
   height: 40px;
   display: flex;
   align-items: center;
-  p{
+  p {
     color: #001b34;
   }
 `;
@@ -49,22 +52,27 @@ export default function RoomList() {
   };
 
   return (
-    <Collapse ghost defaultActiveKey={["1"]}>
-      <PanelStyled header="List Room Chat">
-        {rooms.map((room) => (
-          <LinkStyled key={room.id} onClick={() => setSelectedRoomId(room.id)}>
-            <p>{room.name}</p>
-          </LinkStyled>
-        ))}
-        <Button
-          type="text"
-          icon={<PlusSquareOutlined />}
-          className="add-room"
-          onClick={handleAddRoom}
-        >
-          Tạo Phòng Mới
-        </Button>
-      </PanelStyled>
-    </Collapse>
+    <>
+      <Collapse ghost defaultActiveKey={["1"]}>
+        <PanelStyled header="List Room Chat">
+          {rooms.map((room) => (
+            <LinkStyled
+              key={room.id}
+              onClick={() => setSelectedRoomId(room.id)}
+            >
+              <p>{room.name}</p>
+            </LinkStyled>
+          ))}
+        </PanelStyled>
+      </Collapse>
+      <Button
+        type="text"
+        icon={<PlusSquareOutlined />}
+        className="add-room"
+        onClick={handleAddRoom}
+      >
+        Tạo Phòng Mới
+      </Button>
+    </>
   );
 }

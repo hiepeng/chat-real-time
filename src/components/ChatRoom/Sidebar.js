@@ -9,7 +9,20 @@ const SidebarStyled = styled.div`
   color: white;
   height: 100vh;
   border-right: 3px solid #eee;
+  @media only screen and (max-width: 600px) {
+    height: 100%;
+  }
 `;
+
+const Rooms = styled.div`
+@media only screen and (max-width: 600px) {
+  max-height: 300px;
+  overflow-y: auto;
+}
+`;
+
+
+
 
 export default function Sidebar() {
   return (
@@ -22,7 +35,9 @@ export default function Sidebar() {
 
         <Col span={24}>
           {" "}
+          <Rooms>
           <RoomList />{" "}
+          </Rooms>
         </Col>
       </Row>
     </SidebarStyled>

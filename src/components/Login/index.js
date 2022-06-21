@@ -3,6 +3,7 @@ import { Row, Col, Button, Typography } from "antd";
 import firebase, { auth } from "../firebase/config";
 import { useNavigate } from "react-router-dom";
 import { addDocument, generateKeywords } from "../firebase/services";
+import styled from "styled-components";
 
 const { Title } = Typography;
 
@@ -32,19 +33,39 @@ export default function Login() {
     }
   });
 
+  const LoginImage = styled.div`
+    display: flex;
+    justify-items: center;
+    margin-top: 10px;
+    img {
+      margin: 0 auto;
+    }
+
+    @media only screen and (max-width: 600px) {
+      img{
+        height: auto;
+        width: 100%;
+        
+      }
+    }
+
+  `;
+
+
   return (
     <div>
       <Row justify="center" style={{ height: 800 }}>
-        <Col span={8}>
+        <Col span={20}>
           <Title style={{ textAlign: "center" }} level={3}>
-            Chat Internal
+            Chat ở đây rất bí mật
           </Title>
           <Button style={{ width: "100%", marginBottom: 5 }}>
-            Login Google
+            Login Google nhưng mà không bấm được
           </Button>
           <Button style={{ width: "100%" }} onClick={handleFbLogin}>
             Login Facebook
           </Button>
+          <LoginImage> <img src="image/login.jpg" alt="nguoidep" /> </LoginImage>
         </Col>
       </Row>
     </div>
