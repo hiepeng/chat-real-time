@@ -6,6 +6,7 @@
     "@ant-design/icons": "^4.7.0",
     "@types/react": "^17.0.37",
     "antd": "^4.17.3",
+    "create-react-app": "^5.0.1",
     "date-fns": "^2.27.0",
     "firebase": "^9.6.1",
     "lodash": "^4.17.21",
