@@ -65,7 +65,7 @@ export default function Login() {
           <Button style={{ width: "100%" }} onClick={handleFbLogin}>
             Login Facebook
           </Button>
-          <LoginImage> <img src="image/login2.jpg" alt="nguoidep" /> </LoginImage>
+          <LoginImage> <img src="image/login.jpg" alt="nguoidep" /> </LoginImage>
         </Col>
       </Row>
     </div>
