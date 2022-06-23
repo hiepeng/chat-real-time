@@ -72,7 +72,7 @@ export default function Message({
         {linkImage.includes('.mp4') || linkImage.includes('.mkv') ? (
           <VideoSend src={linkImage} controls="controls" autoplay="true" />
         ) : (
-          <ImageSend src={linkImage} alt="khong co image" />
+          <ImageSend src={linkImage}  />
         )}
       </div>
     </WrapperStyled>
