@@ -1,6 +1,6 @@
 import { Avatar, Typography } from "antd";
 import { formatRelative } from "date-fns";
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 const WrapperStyled = styled.div`
@@ -21,6 +21,20 @@ const WrapperStyled = styled.div`
   }
 `;
 
+const ImageSend = styled.img`
+  max-width: 85%;
+  height: auto;
+  @media (min-width: 768px) {
+    max-width: 768px;
+    height: auto;
+  }
+`;
+
+const VideoSend = styled.video`
+  max-width: 85%;
+  height: auto;
+`;
+
 function formatDate(seconds) {
   let formattedDate = "";
 
@@ -34,7 +48,13 @@ function formatDate(seconds) {
   return formattedDate;
 }
 
-export default function Message({ text, displayName, createdAt, photoURL }) {
+export default function Message({
+  text,
+  displayName,
+  createdAt,
+  photoURL,
+  linkImage,
+}) {
   return (
     <WrapperStyled>
       <div>
@@ -49,6 +69,11 @@ export default function Message({ text, displayName, createdAt, photoURL }) {
       </div>
       <div>
         <Typography.Text className="content">{text}</Typography.Text>
+        {linkImage.includes('.mp4') || linkImage.includes('.mkv') ? (
+          <VideoSend src={linkImage} controls="controls" autoplay="true" />
+        ) : (
+          <ImageSend src={linkImage} alt="khong co image" />
+        )}
       </div>
     </WrapperStyled>
   );

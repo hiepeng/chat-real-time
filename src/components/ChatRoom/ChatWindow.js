@@ -8,7 +8,12 @@ import { AuthContext } from "../../Context/AuthProvider";
 import { addDocument } from "../firebase/services";
 import useFirestore from "../../hooks/useFirestore";
 import { storage } from "../firebase/config";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  listAll,
+} from "firebase/storage";
 
 const HeaderStyled = styled.div`
   display: flex;
@@ -91,10 +96,21 @@ const WrapperStyled = styled.div`
   }
 `;
 
+const TagLoad = styled.p`
+  margin: auto;
+  padding: 0 10px;
+`;
+
 export default function ChatWindow() {
   const inputRef = useRef(null);
-
+  const [file, setFile] = useState(null);
+  const [percent, setPercent] = useState(0);
   const messageListRef = useRef(null);
+  const imagesListRef = ref(storage, "file/");
+  const [imageUrls, setImageUrls] = useState([]);
+  const saveFile = (event) => {
+    setFile(event.target.files[0]);
+  };
 
   const { selectedRoom, members, setIsInviteMemberVisible } =
     useContext(AppContext);
@@ -112,46 +128,70 @@ export default function ChatWindow() {
   };
 
   const handleOnSubmit = () => {
-    addDocument("messages", {
-      text: inputValue,
-      uid,
-      photoURL,
-      roomId: selectedRoom.id,
-      displayName,
-    });
+    // console.log(linkImageURL)
 
-    form.resetFields("");
-
-    if (inputRef?.current) {
-      setTimeout(() => {
-        inputRef.current.focus();
-      });
-    }
-
-    if (!file) {
-      alert("Please choose a file first!");
-    }
-    const storageRef = ref(storage, `/files/${file.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const percent = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        );
-
-        // update progress
-        setPercent(percent);
-      },
-      (err) => console.log(err),
-      () => {
-        // download url
-        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-          console.log(url);
+    const upFile = (event) => {
+      if (!inputValue && !file) {
+        alert("hay nhap tin nhan");
+      } else if (inputValue && !file) {
+        addDocument("messages", {
+          text: inputValue,
+          uid,
+          photoURL,
+          roomId: selectedRoom.id,
+          displayName,
+          linkImage: "",
         });
-      }
-    );
+        form.resetFields("");
+        setInputValue("");
 
+        if (inputRef?.current) {
+          setTimeout(() => {
+            inputRef.current.focus();
+          });
+        }
+      } else {
+        const storageRef = ref(storage, `/file/${file.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            const percent = Math.round(
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+            );
+            setPercent(percent);
+          },
+          (err) => console.log(err),
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+              setImageUrls((prev) => [...prev, url]);
+              addDocument("messages", {
+                text: inputValue,
+                uid,
+                photoURL,
+                roomId: selectedRoom.id,
+                displayName,
+                linkImage: url,
+              });
+              form.resetFields("");
+              setInputValue("");
+              setFile(null);
+
+              if (inputRef?.current) {
+                setTimeout(() => {
+                  inputRef.current.focus();
+                });
+              }
+              console.log("3");
+            });
+          }
+        );
+        setFile(null);
+        document.getElementById("idSendFile").value = "";
+      }
+    };
+
+    upFile();
   };
 
   const condition = React.useMemo(
@@ -165,23 +205,22 @@ export default function ChatWindow() {
 
   const messages = useFirestore("messages", condition);
 
-  console.log({ messages });
-
   useEffect(() => {
-    // scroll to bottom after message changed
     if (messageListRef?.current) {
       messageListRef.current.scrollTop =
         messageListRef.current.scrollHeight + 50;
     }
   }, [messages]);
 
-  const [file, setFile] = useState();
-  console.log(file);
-  const getFile = (event) => {
-    setFile(event.target.files[0]);
-  };
-
-  const [percent, setPercent] = useState(0);
+  useEffect(() => {
+    listAll(imagesListRef).then((response) => {
+      response.items.forEach((item) => {
+        getDownloadURL(item).then((url) => {
+          setImageUrls((prev) => [...prev, url]);
+        });
+      });
+    });
+  }, []);
 
   return (
     <WrapperStyled>
@@ -217,7 +256,6 @@ export default function ChatWindow() {
               </Avatar.Group>
             </ButtonGroupStyled>
           </HeaderStyled>
-
           <ContentStyled>
             <MessageListStyled ref={messageListRef}>
               {messages.map((mes) => (
@@ -227,12 +265,35 @@ export default function ChatWindow() {
                   photoURL={mes.photoURL}
                   displayName={mes.displayName}
                   createdAt={mes.createdAt}
+                  linkImage={mes.linkImage}
                 />
               ))}
             </MessageListStyled>
             <FormStyled form={form}>
-              <input type="file" onChange={getFile} accept="" />
-              <p>{percent} "% done"</p>
+              <label
+                htmlFor="idSendFile"
+                style={{
+                  background: "linear-gradient( #bdc3c7, #2c3e50)",
+                  height: "100%",
+                  padding: "0px 10px",
+                  marginLeft: "2px",
+                  display: "flex",
+                  alignItems: "center",
+                  borderRadius: "3px",
+                  color: "white",
+                  cursor: "pointer",
+                }}
+              >
+                send file
+              </label>
+              <input
+                style={{ display: "none" }}
+                id="idSendFile"
+                type="file"
+                onChange={saveFile}
+              />
+
+              <TagLoad>{percent}</TagLoad>
               <Form.Item name="messages">
                 <Input
                   ref={inputRef}

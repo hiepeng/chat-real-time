@@ -82,7 +82,6 @@ export default function InviteMemberModal() {
     form.resetFields();
   };
 
-  console.log({ value });
 
   return (
     <div>
